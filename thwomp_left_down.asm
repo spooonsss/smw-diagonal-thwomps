@@ -87,7 +87,7 @@ SPRITE_CODE_START:	JSR SUB_GFX
 			; LDA #$00
 			%SubOffScreen()	; only process sprite while on screen           
 			
-			JSL $01A7DC		; interact with mario 
+			JSL $01A7DC|!BankB		; interact with mario 
 			
 			LDA !SPRITE_STATE,x
 			CMP #$01
@@ -140,8 +140,8 @@ RISING1:			JMP RISING
 ; state 1
 ;-----------------------------------------------------------------------------------------
 
-FALLING:			JSL $01801A		;apply speed
-			JSL $018022
+FALLING:			JSL $01801A|!BankB		;apply speed
+			JSL $018022|!BankB
 			
 			LDA !SPRITE_Y_SPEED,x	;increase speed if below the max
 			CMP #!MAX_Y_SPEED
@@ -157,7 +157,7 @@ DONT_INC_Y:		LDA !SPRITE_X_SPEED,x	;increase speed if below the max
 			ADC #!GRAVITY_X
 			STA !SPRITE_X_SPEED,x
 
-DONT_INC_X:		JSL $019138		;interact with objects
+DONT_INC_X:		JSL $019138|!BankB		;interact with objects
 			
 			LDA !SPR_OBJ_STATUS,x	;RETURN if not on the ground
 			AND #!IS_ON_GROUND
@@ -174,7 +174,7 @@ DONT_INC_X:		JSL $019138		;interact with objects
 			STA !SPRITE_X_POS_HI,x
                     
 			
-			JSL $019138		;interact with objects
+			JSL $019138|!BankB		;interact with objects
 			
 			PLA
 			STA !SPRITE_X_POS_HI,x
@@ -225,8 +225,8 @@ RISE:			LDA #!RISE_SPEED_Y	;set RISING speed and apply it
 			STA !SPRITE_Y_SPEED,x
 			LDA #!RISE_SPEED_X
 			STA !SPRITE_X_SPEED,x     
-			JSL $01801A
-			JSL $018022             
+			JSL $01801A|!BankB
+			JSL $018022|!BankB             
 RETURN2:			RTS			 
 
 
