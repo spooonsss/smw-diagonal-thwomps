@@ -6,19 +6,19 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
         
 			; symbolic names for RAM addresses (don't change these)
-			!SPRITE_Y_SPEED	= $AA
-			!SPRITE_X_SPEED	= $B6
-			!SPRITE_STATE	= $C2
-			!SPRITE_Y_POS	= $D8
-			!SPRITE_Y_POS_HI	= $14D4
-			!SPRITE_X_POS	= $E4
-			!SPRITE_X_POS_HI	= $14E0
-			!ORIG_Y_POS	= $151C
-			!EXPRESSION	= $1528
-			!FREEZE_TIMER	= $1540
-			!SPR_OBJ_STATUS	= $1588
-			!H_OFFSCREEN	= $15A0
-			!V_OFFSCREEN	= $186C
+			!SPRITE_Y_SPEED	= !AA
+			!SPRITE_X_SPEED	= !B6
+			!SPRITE_STATE	= !C2
+			!SPRITE_Y_POS	= !D8
+			!SPRITE_Y_POS_HI	= !14D4
+			!SPRITE_X_POS	= !E4
+			!SPRITE_X_POS_HI	= !14E0
+			!ORIG_Y_POS	= !151C
+			!EXPRESSION	= !1528
+			!FREEZE_TIMER	= !1540
+			!SPR_OBJ_STATUS	= !1588
+			!H_OFFSCREEN	= !15A0
+			!V_OFFSCREEN	= !186C
 			
 			; definitions of bits (don't change these)
 			!IS_ON_GROUND	= $04
@@ -48,11 +48,11 @@ PROPERTIES:		db $03,$43,$03,$43,$03
 			PRINT "INIT ",pc
 			LDA !SPRITE_Y_POS,x  
 			STA !ORIG_Y_POS,x
-			LDA $E4,x  
+			LDA !E4,x  
 			CLC        
 			ADC #$08   
-			STA $E4,x 
-			STA $1534,x
+			STA !E4,x 
+			STA !1534,x
 			RTL
       
 
@@ -77,7 +77,7 @@ RETURN:			RTS
 
 SPRITE_CODE_START:	JSR SUB_GFX
 
-			LDA $14C8,x		; RETURN if sprite status != 8
+			LDA !14C8,x		; RETURN if sprite status != 8
 			CMP #$08            	 
 			BNE RETURN           
 			
@@ -107,7 +107,7 @@ HOVERING:		LDA !V_OFFSCREEN,x	;fall if offscreen vertically
 			
 			%SubHorzPos() ;determine if mario is close and act accordingly
 			TYA        
-			STA $157C,x
+			STA !157C,x
 			;STZ !EXPRESSION,x
 			;LDA $0E    
 			;CLC        
@@ -190,10 +190,10 @@ DONT_INC_X:		JSL $019138		;interact with objects
 HIT:			JSR SUB_9A04		; ?? speed related
 			
 			LDA #!TIME_TO_SHAKE	;shake ground
-			STA $1887
+			STA $1887|!Base2
 			
 			LDA #!SOUND_EFFECT	;play sound effect
-			STA $1DFC
+			STA $1DFC|!Base2
 			
 			LDA #!TIME_ON_GROUND	;set time to stay on ground
 			STA !FREEZE_TIMER,x  
@@ -217,8 +217,8 @@ RISING:              	LDA !FREEZE_TIMER,x	;if we're still waiting on the ground,
 
 			STZ !SPRITE_STATE,x	;reset state to HOVERING
 
-			LDA $1534,x
-			STA $E4,x
+			LDA !1534,x
+			STA !E4,x
 			RTS			 
 
 RISE:			LDA #!RISE_SPEED_Y	;set RISING speed and apply it
@@ -247,16 +247,16 @@ SUB_GFX:
 LOOP_START:		LDA $00    
 			CLC			 
 			ADC X_OFFSET,x
-			STA $0300,y
+			STA $0300|!Base2,y
 
 			LDA $01    
 			CLC			 
 			ADC Y_OFFSET,x
-			STA $0301,y
+			STA $0301|!Base2,y
 
 			LDA PROPERTIES,x
 			ORA $64    
-			STA $0303,y
+			STA $0303|!Base2,y
 
 			LDA TILE_MAP,x
 			CPX #$04                
@@ -267,7 +267,7 @@ LOOP_START:		LDA $00
 			BNE NOT_ANGRY
 			LDA #!ANGRY_TILE               
 NOT_ANGRY:		PLX			 
-NORMAL_TILE:		STA $0302,y
+NORMAL_TILE:		STA $0302|!Base2,y
 
 			INY			 
 			INY			 
@@ -291,7 +291,7 @@ NORMAL_TILE:		STA $0302,y
 SUB_9A04:		LDA !SPR_OBJ_STATUS,x
 			BMI THWOMP_1
 			LDA #$00                
-			LDY $15B8,x
+			LDY !15B8,x
 			BEQ THWOMP_2
 THWOMP_1:		LDA #$18
 THWOMP_2:		STA !SPRITE_Y_SPEED,x
@@ -299,7 +299,7 @@ THWOMP_2:		STA !SPRITE_Y_SPEED,x
 			LDA !SPR_OBJ_STATUS,x
 			BMI THWOMP_01
 			LDA #$00                
-			LDY $15B8,x
+			LDY !15B8,x
 			BEQ THWOMP_02
 THWOMP_01:		LDA #$18
 THWOMP_02:		STA !SPRITE_X_SPEED,x 
